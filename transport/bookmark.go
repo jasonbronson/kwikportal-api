@@ -20,6 +20,13 @@ const (
 	fileNameLength = 10
 )
 
+// GetBookmarks retrieves the bookmarks for the authenticated user.
+//
+// It extracts the user data from the bearer token passed in the request header.
+// Using the user ID, it fetches the bookmarks associated with that user from the database.
+// The bookmarks are then returned as a JSON response.
+//
+// If any error occurs during the retrieval process, an error response is returned instead.
 func getBookmarks(g *gin.Context) {
 
 	userID := GetUserIDFromRequest(g)
@@ -33,6 +40,13 @@ func getBookmarks(g *gin.Context) {
 	responseData(g, bookmarks)
 }
 
+// UploadBookmarks handles the upload of bookmark data from a file.
+//
+// It expects the bookmark file to be included in the request as a form file parameter.
+// The file is saved to a temporary location and then parsed to extract the bookmark data.
+// The parsed bookmarks are then processed or saved as needed.
+//
+// If any error occurs during the upload or parsing process, an error response is returned.
 func uploadBookmarks(g *gin.Context) {
 	// Get the uploaded file from the form data
 	file, err := g.FormFile("bookmarkFile")
@@ -73,6 +87,12 @@ func uploadBookmarks(g *gin.Context) {
 	responseSuccess(g, "success", "ok")
 }
 
+// ParseBookmarks parses the bookmark data from the given file and returns a list of bookmarks.
+//
+// It reads the contents of the file, parses the HTML structure to extract the bookmark data,
+// and returns a list of structured bookmark objects.
+//
+// If any error occurs during the parsing process, an error is returned along with an empty list of bookmarks.
 func ParseBookmarks(g *gin.Context, filename string) ([]models.Bookmark, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {

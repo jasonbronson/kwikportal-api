@@ -11,6 +11,7 @@ import (
 	"github.com/jasonbronson/kwikportal-api/config"
 )
 
+// Main method to start the application
 func main() {
 
 	newRelicApp := config.NewRelicApp()

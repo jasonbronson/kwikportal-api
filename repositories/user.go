@@ -5,6 +5,7 @@ import (
 	"github.com/jasonbronson/kwikportal-api/models"
 )
 
+// GetUser retrieves a user by their email.
 func GetUser(email string) (models.User, error) {
 	db := config.Cfg.GormDB
 
@@ -16,6 +17,8 @@ func GetUser(email string) (models.User, error) {
 
 	return foundUser, nil
 }
+
+// SaveUser saves a user to the database.
 func SaveUser(user models.User) error {
 	db := config.Cfg.GormDB
 

@@ -26,6 +26,7 @@ var (
 	Driver = "nrsqlite3"
 )
 
+// Config holds the application configuration.
 type Config struct {
 	Port               int
 	DatabaseURL        string
@@ -47,7 +48,9 @@ func init() {
 	initRedis()
 }
 
+// initEnv initializes the environment variables.
 func initEnv() {
+	// Load .env using godotenv
 	godotenv.Load()
 	Cfg.Port, _ = strconv.Atoi(os.Getenv("PORT"))
 	Cfg.DatabaseURL = os.Getenv("DATABASE_URL")
@@ -62,11 +65,10 @@ func initEnv() {
 	Cfg.NewRelicEnabled, _ = strconv.ParseBool(os.Getenv("NEW_RELIC_ENABLED"))
 	Cfg.NewRelicLicenseKey = os.Getenv("NEW_RELIC_LICENSE_KEY")
 	Cfg.NewRelicAppName = os.Getenv("NEW_RELIC_APP_NAME")
-
 }
 
+// initDB initializes the database connection.
 func initDB() {
-
 	var err error
 	u, err := dburl.Parse(Cfg.DatabaseURL)
 	if err != nil {
@@ -93,7 +95,7 @@ func initDB() {
 		log.Fatalf("could not initialize gorm: %v", err)
 	}
 
-	//Debug SQL logs?
+	// Debug SQL logs?
 	if Cfg.DBLogMode {
 		Cfg.GormDB.Logger = newLogger
 	}
@@ -101,6 +103,7 @@ func initDB() {
 	log.Println("Success connecting to database")
 }
 
+// initRedis initializes the Redis connection.
 func initRedis() {
 	redisPool, err := strconv.ParseInt(os.Getenv("REDIS_POOL_SIZE"), 10, 64)
 	if err != nil {
@@ -132,6 +135,7 @@ func initRedis() {
 	log.Println("Redis pong:", pong)
 }
 
+// JWTConfig holds the JWT configuration.
 type JWTConfig struct {
 	Secret   string
 	Issuer   string

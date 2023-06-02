@@ -64,7 +64,7 @@ func uploadBookmarks(g *gin.Context) {
 		return
 	}
 
-	// Parse the uploaded file
+	// Parse the uploaded file and inject user_id into the rows as well
 	bookmarks, err := ParseBookmarks(g, "/tmp/"+fileName)
 	if err != nil {
 		responseError(g, fmt.Errorf("Failed to parse bookmarks"))
@@ -85,6 +85,52 @@ func uploadBookmarks(g *gin.Context) {
 	}
 
 	responseSuccess(g, "success", "ok")
+}
+
+func saveBookmark(g *gin.Context) {
+	var bookmark models.Bookmark
+
+	userID := GetUserIDFromRequest(g)
+
+	// Parse incoming JSON body into bookmark
+	if err := g.ShouldBindJSON(&bookmark); err != nil {
+		responseError(g, fmt.Errorf("Failed to parse JSON body: %v", err))
+		return
+	}
+
+	err := repositories.SaveBookmark(bookmark, userID)
+	if err != nil {
+		responseError(g, fmt.Errorf("Failed to save bookmark: %v", err))
+		return
+	}
+
+	responseSuccess(g, "success", "Bookmark saved successfully")
+}
+
+func deleteBookmark(g *gin.Context) {
+	// Extract the ID parameter from the URL
+	bookmarkID := g.Param("id")
+
+	// Get the user ID from the request context
+	userID := GetUserIDFromRequest(g)
+
+	if bookmarkID == "" {
+		responseError(g, fmt.Errorf("Failed to delete bookmark"))
+		return
+	}
+	if userID == "" {
+		responseError(g, fmt.Errorf("Failed to delete bookmark"))
+		return
+	}
+
+	// Delete the bookmark
+	err := repositories.DeleteBookmark(bookmarkID, userID)
+	if err != nil {
+		responseError(g, fmt.Errorf("Failed to delete bookmark: %v", err))
+		return
+	}
+
+	responseSuccess(g, "success", "Bookmark deleted successfully")
 }
 
 // ParseBookmarks parses the bookmark data from the given file and returns a list of bookmarks.

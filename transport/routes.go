@@ -53,6 +53,8 @@ func Router(newRelicApp *newrelic.Application) http.Handler {
 		members := api.Group("/members")
 		{
 			members.Use(AuthMiddleware()).POST("/bookmarks", uploadBookmarks)
+			members.Use(AuthMiddleware()).POST("/bookmark", saveBookmark)
+			members.Use(AuthMiddleware()).DELETE("/bookmark/:id", deleteBookmark)
 			members.Use(AuthMiddleware()).POST("/settings")
 			members.Use(AuthMiddleware()).GET("/settings")
 			members.Use(AuthMiddleware()).GET("/bookmarks", getBookmarks)

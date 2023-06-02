@@ -37,7 +37,33 @@ func GetUsersBookmarks(userID string) ([]models.Bookmark, error) {
 func SaveAllBookmarks(bookmarks []models.Bookmark) error {
 	db := config.Cfg.GormDB
 
-	result := db.Table("bookmarks").Create(&bookmarks)
+	result := db.Debug().Table("bookmarks").Create(&bookmarks)
+	if result.Error != nil {
+		log.Println(result.Error.Error())
+		return result.Error
+	}
+
+	return nil
+}
+
+// SaveBookmark saves a single bookmark row to the database
+func SaveBookmark(bookmark models.Bookmark, userID string) error {
+	db := config.Cfg.GormDB
+
+	result := db.Debug().Table("bookmarks").Where("id = ? AND user_id = ?", bookmark.ID, userID).Updates(&bookmark)
+	if result.Error != nil {
+		log.Println(result.Error.Error())
+		return result.Error
+	}
+
+	return nil
+}
+
+func DeleteBookmark(bookmarkID string, userID string) error {
+	db := config.Cfg.GormDB
+
+	// Delete the bookmark based on the bookmark ID and user ID
+	result := db.Debug().Table("bookmarks").Where("id = ? AND user_id = ?", bookmarkID, userID).Delete(&models.Bookmark{})
 	if result.Error != nil {
 		log.Println(result.Error.Error())
 		return result.Error
